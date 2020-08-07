@@ -1,0 +1,24 @@
+{
+  "name": "white_analytics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ni00/white_analytics.git"
+  },
+  "keywords": [
+    "nodejs",
+    "severless",
+    "analytics"
+  ],
+  "author": "nixiaobai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ni00/white_analytics/issues"
+  },
+  "homepage": "https://github.com/ni00/white_analytics#readme"
+}
