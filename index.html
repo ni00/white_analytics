@@ -220,6 +220,9 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
 
 <script>
+    //云函数分析接口
+    const url = "http://func.nixiaobai.com/analytics"
+
     //月份访问量折线图
     function month_linePlot(data) {
         const linePlot = new G2Plot.Line(document.getElementById('month_linePlot'), {
@@ -443,7 +446,7 @@
             }
         },
         beforeMount() {
-            axios.get("http://func.nixiaobai.com/analytics").then(res => {
+            axios.get(url).then(res => {
                 const infos = res.data;
 
                 //简明统计

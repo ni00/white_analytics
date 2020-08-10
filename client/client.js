@@ -1,4 +1,5 @@
 var url = "https://func.nixiaobai.com/statistics";
+//云函数统计接口
 
 function bin2hex(s) {
     var i,

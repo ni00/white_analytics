@@ -1,6 +1,7 @@
 "use strict";
 const tcb = require('@cloudbase/node-sdk')
 const searcher = require('node-ip2region').create();
+
 exports.main = async (event, context) => {
     console.log("white_analytics is running!");
     const web_info = JSON.parse(event.queryStringParameters.info);
@@ -11,7 +12,7 @@ exports.main = async (event, context) => {
     web_info.user.isp = ip_info.region.split("|")[4];
 
     const app = tcb.init({
-        env: 'white-analytics-1gomqx8cb89f5715'
+        env: context.environment.SCF_NAMESPACE
     })
     var db = app.database()
 

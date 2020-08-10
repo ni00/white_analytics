@@ -2,9 +2,9 @@
   "name": "white_analytics",
   "version": "1.0.0",
   "description": "小白统计：构建于Severless Function之上的网站统计服务",
-  "main": "statistics.js",
+  "main": "statistics/index.js",
   "scripts": {
-    "test": "node statistics.js"
+    "test": "node statistics/index.js"
   },
   "repository": {
     "type": "git",

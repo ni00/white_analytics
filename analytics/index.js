@@ -336,7 +336,7 @@ exports.main = async (event, context) => {
     //const key = event.queryStringParameters.key;
 
     const app = tcb.init({
-        env: 'white-analytics-1gomqx8cb89f5715'
+        env: context.environment.SCF_NAMESPACE
     })
 
     const db = app.database()
