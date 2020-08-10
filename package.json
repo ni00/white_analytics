@@ -2,9 +2,9 @@
   "name": "white_analytics",
   "version": "1.0.0",
   "description": "小白统计：构建于Severless Function之上的网站统计服务",
-  "main": "index.js",
+  "main": "statistics.js",
   "scripts": {
-    "test": "node index.js"
+    "test": "node statistics.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/ni00/white_analytics/issues"
   },
-  "homepage": "https://github.com/ni00/white_analytics#readme"
+  "homepage": "https://github.com/ni00/white_analytics#readme",
+  "dependencies": {
+    "@cloudbase/node-sdk": "latest",
+    "dayjs": "^1.8.32",
+    "node-ip2region": "^1.0.2",
+    "useragent.js": "^0.5.7"
+  }
 }

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>小白统计|网站后台</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.min.js"></script>
+    <script src="https://cdn.staticfile.org/dayjs/1.8.32/dayjs.min.js"></script>
+    <script src="https://cdn.staticfile.org/g2plot/1.2.0-beta.0/g2plot.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/theme-chalk/index.css" rel="stylesheet">
+    <style type="text/css">
+        * {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+
+        .box-card {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .el-row {
+            margin-bottom: 20px;
+
+        }
+
+        .el-col {
+            border-radius: 4px;
+        }
+
+        .row-bg {
+            padding: 10px 0;
+            background-color: #f9fafc;
+        }
+    </style>
+</head>
+<body>
+<body>
+<div id="app">
+    <el-card class="box-card">
+        <div slot="header">
+            <span>小白统计</span>
+        </div>
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="date" label="">
+            </el-table-column>
+            <el-table-column prop="pv" label="浏览量(PV)">
+            </el-table-column>
+            <el-table-column prop="uv" label="访客数(UV)">
+            </el-table-column>
+            <el-table-column prop="ip" label="IP数">
+            </el-table-column>
+        </el-table>
+    </el-card>
+
+    <el-card class="box-card" id="panel">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+
+            <el-tab-pane label="访问流量" name="p1">
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div id="month_linePlot"></div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div id="day_linePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div id="week_linePlot"></div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div id="hour_linePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>Top10受访页面</span>
+                            </div>
+                            <el-table :data="top10" style="width: 100%">
+                                <el-table-column prop="link" label="页面链接">
+                                </el-table-column>
+                                <el-table-column prop="value" label="访问量">
+                                </el-table-column>
+                            </el-table>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>来源信息</span>
+                                <el-table :data="refer" style="width: 100%">
+                                    <el-table-column prop="link" label="来源链接">
+                                    </el-table-column>
+                                    <el-table-column prop="value" label="来源次数">
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-card>
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>访问协议</span>
+                                <el-table :data="protocol" style="width: 100%">
+                                    <el-table-column prop="link" label="协议类型">
+                                    </el-table-column>
+                                    <el-table-column prop="value" label="访问次数">
+                                    </el-table-column>
+                                </el-table>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-tab-pane>
+
+            <el-tab-pane label="用户数据" name="p2">
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>来源城市</span>
+                            </div>
+                            <div id="city_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>来源省份</span>
+                            </div>
+                            <div id="province_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>浏览工具</span>
+                            </div>
+                            <div id="browser_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>操作系统</span>
+                            </div>
+                            <div id="os_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>语言环境</span>
+                            </div>
+                            <div id="lang_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>网络ISP</span>
+                            </div>
+                            <div id="isp_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                    <el-col :span="12">
+                        <el-card class="box-card">
+                            <div slot="header">
+                                <span>用户设备</span>
+                            </div>
+                            <div id="device_piePlot"></div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+
+
+            </el-tab-pane>
+
+            <el-tab-pane label="关于页面" name="p3">
+                <el-steps :active="1">
+                    <el-step title="版本1.0" description="支持单个网站数据统计"></el-step>
+                    <el-step title="版本2.0" description="支持多个网站数据统计"></el-step>
+                    <el-step title="版本3.0" description="最终版本"></el-step>
+                </el-steps>
+                <br>
+                <el-button type="primary" @click="dialogVisible = true">生成网站统计JS代码</el-button>
+            </el-tab-pane>
+        </el-tabs>
+    </el-card>
+    <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+        <span>暂不支持该功能</span>
+        <span slot="footer" class="dialog-footer">
+				    <el-button @click="dialogVisible = false">取 消</el-button>
+				    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+				  </span>
+    </el-dialog>
+
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.11/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.13.2/index.js"></script>
+
+<script>
+    //月份访问量折线图
+    function month_linePlot(data) {
+        const linePlot = new G2Plot.Line(document.getElementById('month_linePlot'), {
+            title: {
+                visible: true,
+                text: '月份统计',
+            },
+            description: {
+                visible: true,
+                text: '近十二个月访问量数据统计',
+            },
+            data,
+            xField: 'month',
+            yField: 'value',
+        });
+        linePlot.render();
+    }
+
+    //周次访问量折线图
+    function day_linePlot(data) {
+        const linePlot = new G2Plot.Line(document.getElementById('day_linePlot'), {
+            title: {
+                visible: true,
+                text: '周次统计',
+            },
+            description: {
+                visible: true,
+                text: '近七天访问量数据统计',
+            },
+            data,
+            xField: 'day',
+            yField: 'value',
+        });
+        linePlot.render();
+    }
+
+    //星期访问量折线图
+    function week_linePlot(data) {
+        const linePlot = new G2Plot.Line(document.getElementById('week_linePlot'), {
+            title: {
+                visible: true,
+                text: '星期统计',
+            },
+            description: {
+                visible: true,
+                text: '星期各天总访问量数据统计',
+            },
+            data,
+            xField: 'week',
+            yField: 'value',
+        });
+        linePlot.render();
+    }
+
+    //24点访问量折线图
+    function hour_linePlot(data) {
+        const linePlot = new G2Plot.Line(document.getElementById('hour_linePlot'), {
+            title: {
+                visible: true,
+                text: '时刻统计',
+            },
+            description: {
+                visible: true,
+                text: '各时刻总访问量数据统计',
+            },
+            data,
+            xField: 'hour',
+            yField: 'value',
+        });
+        linePlot.render();
+    }
+
+    //来源城市饼状图
+    function city_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('city_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //来源省份饼状图
+    function province_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('province_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //访问设备饼状图
+    function device_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('device_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //浏览工具饼状图
+    function browser_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('browser_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //语言环境饼状图
+    function lang_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('lang_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //网络ISP饼状图
+    function isp_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('isp_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //操作系统饼状图
+    function os_piePlot(data) {
+        const piePlot = new G2Plot.Pie(document.getElementById('os_piePlot'), {
+            forceFit: true,
+            radius: 0.8,
+            data,
+            angleField: 'value',
+            colorField: 'type',
+            label: {
+                visible: true,
+                type: 'inner',
+            },
+        });
+
+        piePlot.render();
+    }
+
+    //生成网站统计js代码
+    function toJS() {
+
+
+    }
+
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                activeName: 'p1',
+                tableData: [],
+                top10: [],
+                refer: [],
+                protocol: [],
+                dialogVisible: false
+            }
+        },
+        methods: {
+            handleClick(tab, event) {
+                console.log(tab, event);
+            },
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {
+                    });
+            }
+        },
+        beforeMount() {
+            axios.get("http://func.nixiaobai.com/analytics").then(res => {
+                const infos = res.data;
+
+                //简明统计
+                this.$data.tableData = [{
+                    date: "总计",
+                    pv: infos.user.total,
+                    uv: infos.user.uid,
+                    ip: infos.user.ip
+                }];
+
+                //折线图
+                //月份折线图
+                const month_arr = [];
+                for (let m in infos.time.month) {
+                    month_arr.push({
+                        month: m,
+                        value: infos.time.month[m]
+                    })
+                }
+                month_linePlot(month_arr);
+
+                //周次折线图
+                const day_arr = [];
+                for (let d in infos.time.day) {
+                    day_arr.push({
+                        day: d,
+                        value: infos.time.day[d]
+                    })
+                }
+                day_linePlot(day_arr)
+
+                //星期折线图
+                const week_arr = [];
+                for (let w in infos.time.week) {
+                    week_arr.push({
+                        week: w,
+                        value: infos.time.week[w]
+                    })
+                }
+                week_linePlot(week_arr)
+
+                //时刻折线图
+                const hour_arr = [];
+                for (let h in infos.time.hour) {
+                    hour_arr.push({
+                        hour: h,
+                        value: infos.time.hour[h]
+                    })
+                }
+                hour_linePlot(hour_arr)
+
+                //TOP10访问页面链接
+                this.$data.top10 = infos.page.url;
+                //来源页面
+                this.$data.refer = infos.page.referrer;
+                //访问协议
+                this.$data.protocol = infos.page.protocol;
+
+                //饼状图
+                lang_piePlot(infos.other.lang);
+                os_piePlot(infos.other.os);
+                device_piePlot(infos.other.device);
+                browser_piePlot(infos.other.browser);
+                isp_piePlot(infos.user.isp);
+                city_piePlot(infos.user.city);
+                province_piePlot(infos.user.province);
+
+
+            })
+        }
+    })
+</script>
+</body>
+</html>
